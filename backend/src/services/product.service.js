@@ -18,7 +18,7 @@ const findProductById = async (id) => {
 
 const createProduct = async (productBody) => {
   if (!productBody.name) {
-    return { status: 'BAD_REQUEST', data: { message: '\"name\" is required' } };
+    return { status: 'BAD_REQUEST', data: { message: '"name" is required' } };
   }
 
   const error = schema.validateNameProduct(productBody);
@@ -26,6 +26,7 @@ const createProduct = async (productBody) => {
 
   const newId = await productModel.createProduct(productBody);
   const newProduct = await productModel.findProductById(newId);
+
   return { status: 'CREATED', data: newProduct };
 };
 

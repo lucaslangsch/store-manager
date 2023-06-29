@@ -1,7 +1,7 @@
 const chai = require('chai');
 const sinon = require('sinon');
 const sinonChai = require('sinon-chai');
-const { productFromDB, productsFromDB } = require('../../product.mock');
+const { productFromDB, productsFromDB, newProductFromDB } = require('../../product.mock');
 const { productsService } = require('../../../src/services/index');
 const { productsControler } = require('../../../src/controllers/index');
 
@@ -65,8 +65,27 @@ describe('Testes na product.controller:', function () {
     await productsControler.findById(req, res);
 
     expect(res.status).to.have.been.calledWith(404);
-    // expect(res.json).to.have.been.calledWith(productFromDB);
     expect(res.json).to.have.been.calledWith(sinon.match.has('message'));
+  });
+
+  it('Cadastrando um produto COM sucesso', async function () {
+    sinon.stub(productsService, 'createProduct').resolves({
+      status: 'SUCCESSFUL',
+      data: newProductFromDB,
+    });
+    
+    const req = {
+      body: { name: 'sdfsdf' },
+    };
+    const res = {
+      status: sinon.stub().returnsThis(),
+      json: sinon.stub(),
+    };
+
+    await productsControler.createProduct(req, res);
+
+    expect(res.status).to.have.been.calledWith(200);
+    expect(res.json).to.have.been.calledWith(newProductFromDB);
   });
 
   afterEach(function () {

@@ -18,7 +18,13 @@ const productFromDB = {
   name: 'Product1',
 };
 
+const newProductFromDB = {
+  id: 4,
+  name: 'Product4',
+};
+
 module.exports = {
   productsFromDB,
   productFromDB,
+  newProductFromDB,
 };

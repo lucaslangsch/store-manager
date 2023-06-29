@@ -3,7 +3,7 @@ const chai = require('chai');
 const sinon = require('sinon');
 const sinonChai = require('sinon-chai');
 
-const { productFromDB, productsFromDB } = require('../../product.mock');
+const { productFromDB, productsFromDB, newProductFromDB } = require('../../product.mock');
 const { productModel } = require('../../../src/models/index');
 const { productsService } = require('../../../src/services/index');
 
@@ -38,6 +38,34 @@ describe('Testes na product.service:', function () {
 
     expect(products.status).to.be.equal('NOT_FOUND');
     expect(products.data).to.be.deep.equal({ message: 'Product not found' });
+  });
+
+  it('Cadastrando um novo produto', async function () {
+    sinon.stub(productModel, 'createProduct').resolves(newProductFromDB.id);
+    sinon.stub(productModel, 'findProductById').resolves(newProductFromDB);
+    
+    const newProduct = await productsService.createProduct({ name: 'Product4' });
+
+    expect(newProduct.status).to.be.equal('CREATED');
+    expect(newProduct.data).to.be.deep.equal(newProductFromDB);
+  });
+
+  it('Cadastrando um novo produto sem NAME', async function () {
+    sinon.stub(productModel, 'createProduct').resolves(newProductFromDB.id);
+    sinon.stub(productModel, 'findProductById').resolves(newProductFromDB);
+    
+    const newProduct = await productsService.createProduct({ name: '' });
+
+    expect(newProduct.status).to.be.equal('BAD_REQUEST');
+  });
+
+  it('Cadastrando um novo produto com NAME inválido', async function () {
+    sinon.stub(productModel, 'createProduct').resolves(newProductFromDB.id);
+    sinon.stub(productModel, 'findProductById').resolves(newProductFromDB);
+    
+    const newProduct = await productsService.createProduct({ name: 'Pro' });
+
+    expect(newProduct.status).to.be.equal('INVALID_VALUE');
   });
 
   afterEach(function () {
