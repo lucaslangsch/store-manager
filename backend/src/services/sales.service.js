@@ -15,7 +15,13 @@ const findSalesById = async (id) => {
   return { status: 'SUCCESSFUL', data: sales };
 };
 
+const insertSale = async (salesBody) => {
+  const sales = await salesModel.insertSale(salesBody);
+  return { status: 'CREATED', data: sales };
+};
+
 module.exports = {
   findAllSales,
   findSalesById,
+  insertSale,
 };

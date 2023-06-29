@@ -1,4 +1,5 @@
 const connection = require('./connection');
+const getDate = require('../utils/getDate');
 
 const findAllSales = async () => {
   const query = (`
@@ -24,7 +25,25 @@ const findSalesById = async (id) => {
   return sales;
 };
 
+const insertSale = async (salesBody) => {
+  const queryForSale = 'INSERT INTO sales (date) VALUE (?);';
+  const [{ insertId }] = await connection.execute(queryForSale, [getDate()]);
+
+  const query = 'INSERT INTO sales_products (sale_id, product_id, quantity) VALUE (?, ?, ?);';
+  salesBody.forEach(async (element) => {
+    await connection.execute(query, [insertId, ...Object.values(element)]);
+  });
+
+  return {
+    id: insertId,
+    itemsSold: [
+      ...salesBody,
+    ],
+  };
+};
+
 module.exports = {
   findAllSales,
   findSalesById,
+  insertSale,
 };
