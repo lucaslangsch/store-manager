@@ -2,7 +2,8 @@ const chai = require('chai');
 const sinon = require('sinon');
 const connection = require('../../../src/models/connection');
 const { productFromDB, productsFromDB, newProductFromDB } = require('../../product.mock');
-const { findAllProducts, findProductById, createProduct } = require('../../../src/models/product.model');
+const { findAllProducts, findProductById, createProduct, allProductsExist } = require('../../../src/models/product.model');
+const { newInputSaleFromDb } = require('../../sales.mock');
 
 const { expect } = chai;
 
@@ -39,6 +40,30 @@ describe('Testes na product.model:', function () {
     expect(id).to.be.equal(4);
     expect(newProduct).to.be.an('object');
     expect(newProduct).to.be.deep.equal(newProductFromDB);
+  });
+
+  it('Verifica se todos os produtos de um array existem, com resultado postivo', async function () {
+    sinon.stub(connection, 'execute')
+    .onFirstCall()
+    .resolves([[productFromDB]])
+    .onSecondCall()
+    .resolves([[productFromDB]]);
+    
+    const exist = await allProductsExist(newInputSaleFromDb);
+
+    expect(exist).to.be.equal(false);
+  });
+
+  it('Verifica se todos os produtos de um array existem, com resultado negativo', async function () {
+    sinon.stub(connection, 'execute')
+    .onFirstCall()
+    .resolves([[productFromDB]])
+    .onSecondCall()
+    .resolves([[undefined]]);
+    
+    const exist = await allProductsExist(newInputSaleFromDb);
+
+    expect(exist).to.be.equal(true);
   });
 
   afterEach(function () {

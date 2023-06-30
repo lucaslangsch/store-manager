@@ -23,8 +23,19 @@ const createProduct = async (productBody) => {
   return insertId;
 };
 
+const allProductsExist = async (lista) => {
+  const promises = lista.map(async (element) => {
+    const products = await findProductById(element.productId);
+    return products;
+  });
+
+  const results = await Promise.all(promises);
+  return results.some((result) => result === undefined);
+};
+
 module.exports = {
   findAllProducts,
   findProductById,
   createProduct,
+  allProductsExist,
 };

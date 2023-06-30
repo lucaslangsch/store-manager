@@ -1,4 +1,5 @@
-const { salesModel } = require('../models/index');
+const { salesModel, productModel } = require('../models/index');
+const { validateIdSales, validateQuantitySales } = require('./validations/validationsInputValues');
 
 const findAllSales = async () => {
   const sales = await salesModel.findAllSales();
@@ -16,6 +17,21 @@ const findSalesById = async (id) => {
 };
 
 const insertSale = async (salesBody) => {
+  const erroId = validateIdSales(salesBody);
+  if (erroId) {
+    return { status: erroId.status, data: { message: erroId.message } };
+  }
+  
+  const erroQuantity = validateQuantitySales(salesBody);
+  if (erroQuantity) {
+    return { status: erroQuantity.status, data: { message: erroQuantity.message } };
+  }
+  
+  const erroProductDontExist = await productModel.allProductsExist(salesBody);
+  if (erroProductDontExist) {
+    return { status: 'NOT_FOUND', data: { message: 'Product not found' } };
+  }
+
   const sales = await salesModel.insertSale(salesBody);
   return { status: 'CREATED', data: sales };
 };

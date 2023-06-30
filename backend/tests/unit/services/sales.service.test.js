@@ -3,8 +3,8 @@ const chai = require('chai');
 const sinon = require('sinon');
 const sinonChai = require('sinon-chai');
 
-const { salesFromDb } = require('../../sales.mock');
-const { salesModel } = require('../../../src/models/index');
+const { salesFromDb, newSaleFromDb, newInputSaleFromDb, newInputSaleWithQntdZero, newInputSaleWithoutQntd, newInputSaleWithoutId } = require('../../sales.mock');
+const { salesModel, productModel } = require('../../../src/models/index');
 const { salesService } = require('../../../src/services/index');
 
 chai.use(sinonChai);
@@ -48,6 +48,46 @@ describe('Testes na sales.service:', function () {
 
     expect(sales.status).to.be.equal('NOT_FOUND');
     expect(sales.data).to.be.deep.equal({ message: 'Sale not found' });
+  });
+
+  it('Inserindo uma nova venda com sucesso', async function () {
+    sinon.stub(productModel, 'allProductsExist').resolves();
+    sinon.stub(salesModel, 'insertSale').resolves(newSaleFromDb);
+    
+    const sales = await salesService.insertSale(newInputSaleFromDb);
+
+    expect(sales.status).to.be.equal('CREATED');
+    expect(sales.data).to.be.deep.equal(newSaleFromDb);
+  });
+
+  it('Inserindo uma nova venda SEM sucesso, quantidade igual a 0', async function () {  
+    const sales = await salesService.insertSale(newInputSaleWithQntdZero);
+
+    expect(sales.status).to.be.equal('INVALID_VALUE');
+    expect(sales.data.message).to.be.equal('"quantity" must be greater than or equal to 1');
+  });
+
+  it('Inserindo uma nova venda SEM sucesso, sem a propriedade quantity', async function () {  
+    const sales = await salesService.insertSale(newInputSaleWithoutQntd);
+
+    expect(sales.status).to.be.equal('BAD_REQUEST');
+    expect(sales.data.message).to.be.equal('"quantity" is required');
+  });
+
+  it('Inserindo uma nova venda SEM sucesso, sem a propriedade productId', async function () {  
+    const sales = await salesService.insertSale(newInputSaleWithoutId);
+
+    expect(sales.status).to.be.equal('BAD_REQUEST');
+    expect(sales.data.message).to.be.equal('"productId" is required');
+  });
+
+  it('Inserindo uma nova venda SEM sucesso, produto inexistente', async function () {
+    sinon.stub(productModel, 'allProductsExist').resolves(true);
+    
+    const sales = await salesService.insertSale(newInputSaleFromDb);
+
+    expect(sales.status).to.be.equal('NOT_FOUND');
+    expect(sales.data).to.be.deep.equal({ message: 'Product not found' });
   });
 
   afterEach(function () {

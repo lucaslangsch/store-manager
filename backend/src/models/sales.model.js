@@ -30,15 +30,13 @@ const insertSale = async (salesBody) => {
   const [{ insertId }] = await connection.execute(queryForSale, [getDate()]);
 
   const query = 'INSERT INTO sales_products (sale_id, product_id, quantity) VALUE (?, ?, ?);';
-  salesBody.forEach(async (element) => {
+  await Promise.all(salesBody.map(async (element) => {
     await connection.execute(query, [insertId, ...Object.values(element)]);
-  });
+  }));
 
   return {
     id: insertId,
-    itemsSold: [
-      ...salesBody,
-    ],
+    itemsSold: [...salesBody],
   };
 };
 

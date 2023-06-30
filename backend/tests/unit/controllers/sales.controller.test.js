@@ -1,7 +1,7 @@
 const chai = require('chai');
 const sinon = require('sinon');
 const sinonChai = require('sinon-chai');
-const { salesFromDb } = require('../../sales.mock');
+const { salesFromDb, newInputSaleFromDb } = require('../../sales.mock');
 const { salesService } = require('../../../src/services/index');
 const { salesController } = require('../../../src/controllers/index');
 
@@ -64,6 +64,26 @@ describe('Testes na sales.controller:', function () {
     await salesController.findById(req, res);
 
     expect(res.status).to.have.been.calledWith(404);
+    expect(res.json).to.have.been.calledWith(sinon.match.has('message'));
+  });
+
+  it('Inserindo uma nova venda com sucesso', async function () {
+    sinon.stub(salesService, 'insertSale').resolves({
+      status: 'CREATED',
+      data: { message: 'message' },
+    });
+    
+    const req = {
+      body: newInputSaleFromDb,
+    };
+    const res = {
+      status: sinon.stub().returnsThis(),
+      json: sinon.stub(),
+    };
+
+    await salesController.insertSale(req, res);
+
+    expect(res.status).to.have.been.calledWith(201);
     expect(res.json).to.have.been.calledWith(sinon.match.has('message'));
   });
 

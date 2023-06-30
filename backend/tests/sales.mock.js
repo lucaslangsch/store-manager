@@ -13,6 +13,55 @@ const salesFromDb = [
   },
 ];
 
+const newInputSaleFromDb = [
+  {
+    productId: 1,
+    quantity: 1,
+  },
+  {
+    productId: 1,
+    quantity: 1,
+  },
+];
+
+const newSaleFromDb = {
+  id: 2,
+  itemsSold: [
+    {
+      productId: 1,
+      quantity: 1,
+    },
+    {
+      productId: 1,
+      quantity: 1,
+    },
+  ],
+};
+
+const newInputSaleWithQntdZero = [
+  {
+    productId: 1,
+    quantity: 0,
+  },
+];
+
+const newInputSaleWithoutQntd = [
+  {
+    productId: 1,
+  },
+];
+
+const newInputSaleWithoutId = [
+  {
+    quantity: 1,
+  },
+];
+
 module.exports = {
   salesFromDb,
+  newInputSaleFromDb,
+  newSaleFromDb,
+  newInputSaleWithQntdZero,
+  newInputSaleWithoutQntd,
+  newInputSaleWithoutId,
 };

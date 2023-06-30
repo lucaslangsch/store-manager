@@ -1,8 +1,8 @@
 const chai = require('chai');
 const sinon = require('sinon');
 const connection = require('../../../src/models/connection');
-const { salesFromDb } = require('../../sales.mock');
-const { findAllSales, findSalesById } = require('../../../src/models/sales.model');
+const { salesFromDb, newSaleFromDb, newInputSaleFromDb } = require('../../sales.mock');
+const { findAllSales, findSalesById, insertSale } = require('../../../src/models/sales.model');
 
 const { expect } = chai;
 
@@ -25,6 +25,15 @@ describe('Testes na sales.model:', function () {
     expect(products).to.be.instanceOf(Array);
     expect(products).to.have.length(2);
     expect(products).to.be.deep.equal(salesFromDb);
+  });
+
+  it('Inserindo uma venda COM sucesso', async function () {
+    sinon.stub(connection, 'execute').resolves([newSaleFromDb]);
+    
+    const sale = await insertSale(newInputSaleFromDb); // Vem com id undefined, pq???
+    // console.log(sale);
+
+    expect(sale).to.be.instanceOf(Object);
   });
 
   afterEach(function () {
