@@ -42,8 +42,8 @@ const updateProduct = async (productBody, id) => {
   if (!productExist) return { status: 'NOT_FOUND', data: { message: 'Product not found' } };
 
   await productModel.updateProduct(productBody, id);
-  const newProduct = await productModel.findProductById(id);
-  return { status: 'SUCCESSFUL', data: newProduct };
+  // await productModel.findProductById(id);
+  return { status: 'SUCCESSFUL', data: { id, name: productBody.name } };
 };
 
 module.exports = {

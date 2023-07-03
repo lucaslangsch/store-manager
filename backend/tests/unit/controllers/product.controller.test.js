@@ -50,7 +50,7 @@ describe('Testes na product.controller:', function () {
   it('Recuperando um produto pelo id SEM sucesso', async function () {
     sinon.stub(productsService, 'findProductById').resolves({
       status: 'NOT_FOUND',
-      data: { message: 'message' }, // { message: 'message' }
+      data: { message: 'message' },
     });
     
     const req = {
@@ -75,7 +75,7 @@ describe('Testes na product.controller:', function () {
     });
     
     const req = {
-      body: { name: 'sdfsdf' },
+      body: { name: 'Name' },
     };
     const res = {
       status: sinon.stub().returnsThis(),
@@ -83,6 +83,27 @@ describe('Testes na product.controller:', function () {
     };
 
     await productsControler.createProduct(req, res);
+
+    expect(res.status).to.have.been.calledWith(200);
+    expect(res.json).to.have.been.calledWith(newProductFromDB);
+  });
+
+  it('Atualizando um produto COM sucesso', async function () {
+    sinon.stub(productsService, 'updateProduct').resolves({
+      status: 'SUCCESSFUL',
+      data: newProductFromDB,
+    });
+    
+    const req = {
+      body: { name: 'Name' },
+      params: { id: 4 },
+    };
+    const res = {
+      status: sinon.stub().returnsThis(),
+      json: sinon.stub(),
+    };
+
+    await productsControler.updateProduct(req, res);
 
     expect(res.status).to.have.been.calledWith(200);
     expect(res.json).to.have.been.calledWith(newProductFromDB);

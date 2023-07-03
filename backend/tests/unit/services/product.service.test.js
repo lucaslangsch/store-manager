@@ -68,6 +68,46 @@ describe('Testes na product.service:', function () {
     expect(newProduct.status).to.be.equal('INVALID_VALUE');
   });
 
+  it('Alterando um produto', async function () {
+    sinon.stub(productModel, 'findProductById').resolves(productFromDB);
+    sinon.stub(productModel, 'updateProduct').resolves({ id: 1, name: 'Product' });
+    
+    const newProduct = await productsService.updateProduct({ name: 'Product' }, 1);
+
+    expect(newProduct.status).to.be.equal('SUCCESSFUL');
+    expect(newProduct.data).to.be.deep.equal({ id: 1, name: 'Product' });
+  });
+
+  it('Alterando um produto sem a propriedade name', async function () {
+    sinon.stub(productModel, 'findProductById').resolves(productFromDB);
+    // sinon.stub(productModel, 'updateProduct').resolves({ id: 1 });
+    
+    const newProduct = await productsService.updateProduct(1);
+
+    expect(newProduct.status).to.be.equal('BAD_REQUEST');
+    expect(newProduct.data).to.be.deep.equal({ message: '"name" is required' });
+  });
+
+  it('Alterando um produto com a propriedade name insuficente', async function () {
+    sinon.stub(productModel, 'findProductById').resolves(productFromDB);
+    // sinon.stub(productModel, 'updateProduct').resolves({ id: 1, name: 'Pro' });
+    
+    const newProduct = await productsService.updateProduct({ name: 'Pro' }, 1);
+
+    expect(newProduct.status).to.be.equal('INVALID_VALUE');
+    expect(newProduct.data).to.be.deep.equal({ message: '"name" length must be at least 5 characters long' });
+  });
+
+  it('Alterando um produto inexistente', async function () {
+    sinon.stub(productModel, 'findProductById').resolves(false);
+    // sinon.stub(productModel, 'updateProduct').resolves({ id: 99, name: 'Product' });
+    
+    const newProduct = await productsService.updateProduct({ name: 'Product' }, 99);
+
+    expect(newProduct.status).to.be.equal('NOT_FOUND');
+    expect(newProduct.data).to.be.deep.equal({ message: 'Product not found' });
+  });
+
   afterEach(function () {
     sinon.restore();
   });

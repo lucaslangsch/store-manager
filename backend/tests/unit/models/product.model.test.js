@@ -1,8 +1,8 @@
 const chai = require('chai');
 const sinon = require('sinon');
 const connection = require('../../../src/models/connection');
-const { productFromDB, productsFromDB, newProductFromDB } = require('../../product.mock');
-const { findAllProducts, findProductById, createProduct, allProductsExist } = require('../../../src/models/product.model');
+const { productFromDB, productsFromDB, newProductFromDB, returnFromDB } = require('../../product.mock');
+const { findAllProducts, findProductById, createProduct, allProductsExist, updateProduct } = require('../../../src/models/product.model');
 const { newInputSaleFromDb } = require('../../sales.mock');
 
 const { expect } = chai;
@@ -64,6 +64,15 @@ describe('Testes na product.model:', function () {
     const exist = await allProductsExist(newInputSaleFromDb);
 
     expect(exist).to.be.equal(true);
+  });
+
+  it('Atualiza o produto com sucesso', async function () {
+    sinon.stub(connection, 'execute').resolves(returnFromDB);
+    
+    const result = await updateProduct({ name: 'Name' }, 1);
+
+    expect(result[0].affectedRows).to.be.equal(1);
+    expect(result[0].changedRows).to.be.equal(1);
   });
 
   afterEach(function () {
