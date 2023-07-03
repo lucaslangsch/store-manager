@@ -2,6 +2,9 @@ const connection = require('./connection');
 
 const getFormattedColumnNames = (object) => Object.keys((object)).join(',');
 const getFormattedPlaceholders = (object) => Object.keys(object).map(() => '?').join(',');
+const getFormattedUpdateColumns = (object) => Object.keys((object))
+  .map((key) => `${key} = ?`)
+  .join(', ');
 
 const findAllProducts = async () => {
   const [products] = await connection.execute('SELECT * FROM products;');
@@ -33,9 +36,16 @@ const allProductsExist = async (lista) => {
   return results.some((result) => result === undefined);
 };
 
+const updateProduct = async (productBody, id) => {
+  const columns = getFormattedUpdateColumns(productBody);
+  const query = `UPDATE products SET ${columns} WHERE id = ?`;
+  return connection.execute(query, [...Object.values(productBody), id]);
+};
+
 module.exports = {
   findAllProducts,
   findProductById,
   createProduct,
   allProductsExist,
+  updateProduct,
 };
