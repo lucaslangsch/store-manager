@@ -42,10 +42,13 @@ const updateProduct = async (productBody, id) => {
   return connection.execute(query, [...Object.values(productBody), id]);
 };
 
+const deleteProduct = async (id) => connection.execute('DELETE FROM products WHERE id = ?', [id]);
+
 module.exports = {
   findAllProducts,
   findProductById,
   createProduct,
   allProductsExist,
   updateProduct,
+  deleteProduct,
 };
